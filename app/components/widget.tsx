@@ -314,10 +314,13 @@ export function Location() {
   return (
     <div ref={tilt.ref} style={tilt.style} className="card h-full !p-0 overflow-hidden">
       <div className="relative w-full h-full">
-        <img
-          src="/map.png"
-          alt="London, UK"
-          className="absolute inset-0 w-full h-full object-cover"
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d158857.7281146214!2d-0.24168!3d51.5074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8a00baf21de75%3A0x52963a5addd52a99!2sLondon%2C%20UK!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"
+          className="absolute inset-0 w-full h-full"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
         />
         <a href="https://www.google.com/maps?ll=51.5074,-0.1278&z=13&t=m&hl=en&gl=GB&mapclient=embed" target="_blank" rel="noopener noreferrer" className="absolute bottom-3 right-3 bg-white px-3 py-1.5 rounded-full text-xs md:text-sm font-medium shadow-lg flex items-center gap-1.5 text-[#333] hover:scale-105 transition-transform">
           <svg className="w-4 h-4 text-[var(--pink)]" fill="currentColor" viewBox="0 0 24 24">
@@ -492,7 +495,6 @@ export function Blog() {
             onMouseEnter={() => setHoveredIndex(i)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
-            <div className={`absolute -top-2 md:-top-2.5 left-4 md:left-6 w-4 h-4 md:w-5 md:h-5 rounded-full bg-slate-400 border-2 border-slate-500 shadow-sm transition-transform ${hoveredIndex === i ? 'scale-110' : ''}`} />
             <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
               <Pen />
               <span className="text-xs md:text-sm font-semibold uppercase tracking-wide text-slate-500">Blog</span>
@@ -832,8 +834,8 @@ export function TechStack() {
   ];
 
   return (
-    <div ref={tilt.ref} style={tilt.style} className="card">
-      <div className="label !mb-2"><Code /> Tech Stack</div>
+    <div ref={tilt.ref} style={tilt.style} className="card !pb-3">
+      <div className="label !mb-1"><Code /> Tech Stack</div>
       <div className="flex flex-wrap gap-1.5 md:gap-2">
         {technologies.map((tech) => (
           <div
@@ -868,8 +870,8 @@ export function Learning() {
   ];
 
   return (
-    <div ref={tilt.ref} style={tilt.style} className="card">
-      <div className="label !mb-2"><Sparkles /> Skills</div>
+    <div ref={tilt.ref} style={tilt.style} className="card !pb-3">
+      <div className="label !mb-1"><Sparkles /> Skills</div>
       <div className="flex flex-wrap gap-1.5 md:gap-2">
         {skills.map((skill) => (
           <div

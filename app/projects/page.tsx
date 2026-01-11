@@ -13,8 +13,9 @@ const projects = [
     description:
       "My personal portfolio website showcasing my projects and blog.",
     tech: ["Next.js", "Tailwind CSS", "TypeScript"],
-    github: "https://github.com/ashupun/portfolio",
+    github: "https://github.com/ashupun/ashupun",
     live: "https://ashupun.com",
+    icon: "/ashupunicon.png",
   },
   {
     title: "sweethe.art",
@@ -22,21 +23,6 @@ const projects = [
     tech: ["Next.js", "CSS"],
     github: "https://github.com/ashupun/sweetheart",
     live: "https://sweethe.art",
-  },
-  {
-    title: "lovehe.art",
-    description:
-      "A cryptocurrency converter that let's you convert stable coins with minimal transaction fees.",
-    tech: ["Next.js", "Tailwind CSS"],
-    github: "https://github.com/ashupun/loveheart",
-    live: "https://lovehe.art",
-  },
-  {
-    title: "sugarblooms.co.uk",
-    description: "Website for a bespoke cake business based in the UK.",
-    tech: ["Next.js", "Tailwind CSS"],
-    github: "https://github.com/ashupun/sugarblooms",
-    live: "https://sugarblooms.co.uk",
   },
   {
     title: "cryba.by",
@@ -52,7 +38,25 @@ const projects = [
     tech: ["Next.js", "Tailwind CSS"],
     github: "https://github.com/ashupun/loving",
     live: "https://loving.gg",
+    icon: "/lovingicon.png",
   },
+  {
+    title: "lovehe.art",
+    description:
+      "A cryptocurrency converter that let's you convert stable coins with minimal transaction fees.",
+    tech: ["Next.js", "Tailwind CSS"],
+    github: "https://github.com/ashupun/loveheart",
+    live: "https://lovehe.art",
+  },
+  {
+    title: "sugarblooms.co.uk",
+    description: "Website for a bespoke cake business based in the UK.",
+    tech: ["Next.js", "Tailwind CSS"],
+    github: "https://github.com/ashupun/sugarblooms",
+    live: "https://sugarblooms.co.uk",
+    icon: "/sugarbloomsicon.png",
+  },
+
   {
     title: "bunnyrabb.it",
     description:
@@ -95,7 +99,7 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
         <div className="flex items-center gap-2 min-w-0">
           {project.live && (
             <img
-              src={`https://www.google.com/s2/favicons?domain=${new URL(project.live).hostname}&sz=32`}
+              src={"icon" in project ? project.icon : `https://www.google.com/s2/favicons?domain=${new URL(project.live).hostname}&sz=32`}
               alt=""
               className="w-4 h-4 flex-shrink-0"
             />
@@ -108,6 +112,8 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
           {project.github && (
             <a
               href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[var(--muted)] hover:text-[var(--pink)] transition-colors"
             >
               <GitHub className="w-5 h-5" />
@@ -116,6 +122,8 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
           {project.live && (
             <a
               href={project.live}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[var(--muted)] hover:text-[var(--pink)] transition-colors"
             >
               <Globe className="w-5 h-5" />
