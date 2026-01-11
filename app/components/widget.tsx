@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import { User, Mail, Cloud, Music, Pen, Monitor, GitHub, Twitter, LinkedIn, Arrow, Laptop, Computer, Smartphone, Figma, Code, V0, Sparkles, Signal, Heart, Clock, Star, Spotify } from './icons';
+import { User, Mail, Cloud, Music, Pen, Monitor, GitHub, Twitter, Discord, LinkedIn, Arrow, Laptop, Computer, Smartphone, Figma, Code, V0, Sparkles, Signal, Heart, Clock, Star, Spotify } from './icons';
 import { blogs as blogData, getExcerpt } from '../data/blogs';
 
 function useTilt(maxTilt = 10) {
@@ -97,6 +97,12 @@ export function About({ typing = true }: { typing?: boolean }) {
             className="text-[var(--muted)] hover:text-[var(--pink)] transition-all hover:scale-110"
           >
             <LinkedIn />
+          </a>
+          <a
+            href="https://discord.gg/eCGnE5VKsb"
+            className="text-[var(--muted)] hover:text-[var(--pink)] transition-all hover:scale-110"
+          >
+            <Discord />
           </a>
           <a
             href="https://github.com/ashupun"
@@ -394,32 +400,47 @@ export function Projects() {
 
 export function Skills() {
   const tilt = useTilt(10);
-  const skills = [
-    { name: 'UI/UX', label: 'UI', color: 'var(--pink)' },
-    { name: 'HTML/CSS', label: '</>', color: '#e34c26' },
-    { name: 'Collab', label: 'Co', color: '#10b981' },
-    { name: 'Notion', label: 'N', color: '#6b7280' },
+  const socials = [
+    { name: 'Twitter', icon: <Twitter />, color: '#1DA1F2', url: 'https://x.com/ashubun' },
+    { name: 'LinkedIn', icon: <LinkedIn />, color: '#0A66C2', url: 'https://www.linkedin.com/in/ashubun/' },
+    { name: 'Discord', icon: <Discord />, color: '#5865F2', url: 'https://discord.gg/eCGnE5VKsb' },
+    { name: 'GitHub', icon: <GitHub />, color: '#333333', url: 'https://github.com/ashupun' },
   ];
 
   return (
     <div ref={tilt.ref} style={tilt.style} className="card h-full flex flex-col overflow-hidden">
-      <div className="label"><Sparkles /> Skills</div>
-      <div className="flex-1 flex flex-col justify-center gap-2 md:gap-4">
-        {skills.map((skill, i) => (
-          <div key={skill.name} className="flex items-center gap-2 md:gap-3 min-w-0 group cursor-default">
+      <div className="label"><Sparkles /> Socials</div>
+      <div className="flex-1 flex flex-col justify-center gap-2 md:gap-3">
+        {socials.map((social) => (
+          <a
+            key={social.name}
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 group"
+          >
             <div
-              className="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center font-bold text-[10px] md:text-xs flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
+              className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 cursor-pointer"
               style={{
-                backgroundColor: `${skill.color}20`,
-                color: skill.color,
+                backgroundColor: social.color,
+                boxShadow: `0 4px 14px ${social.color}60, inset 0 -4px 8px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.3)`,
+                transform: 'perspective(1000px) rotateX(10deg)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) translateY(-4px) scale(1.1)';
+                e.currentTarget.style.boxShadow = `0 8px 24px ${social.color}80, inset 0 -4px 8px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.3)`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'perspective(1000px) rotateX(10deg)';
+                e.currentTarget.style.boxShadow = `0 4px 14px ${social.color}60, inset 0 -4px 8px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.3)`;
               }}
             >
-              {skill.label}
+              <span className="text-white">{social.icon}</span>
             </div>
-            <p className="text-xs md:text-sm font-medium truncate transition-all duration-300 group-hover:translate-x-1">
-              {skill.name}
-            </p>
-          </div>
+            <span className="text-sm md:text-base font-medium transition-all duration-300 group-hover:text-[var(--pink)] group-hover:translate-x-1">
+              {social.name}
+            </span>
+          </a>
         ))}
       </div>
     </div>
@@ -839,31 +860,31 @@ export function TechStack() {
 
 export function Learning() {
   const tilt = useTilt(12);
-  const learning = [
-    { name: 'TypeScript', color: '#3178c6' },
-    { name: 'Node.js', color: '#68a063' },
-    { name: 'Git', color: '#f05032' },
-    { name: 'AWS', color: '#ff9900' },
+  const skills = [
+    { name: 'UI/UX', label: 'UI', color: 'var(--pink)' },
+    { name: 'HTML/CSS', label: '</>', color: '#e34c26' },
+    { name: 'Collab', label: 'Co', color: '#10b981' },
+    { name: 'Notion', label: 'N', color: '#6b7280' },
   ];
 
   return (
     <div ref={tilt.ref} style={tilt.style} className="card">
-      <div className="label !mb-2"><Sparkles /> Learning</div>
+      <div className="label !mb-2"><Sparkles /> Skills</div>
       <div className="flex flex-wrap gap-1.5 md:gap-2">
-        {learning.map((tech) => (
+        {skills.map((skill) => (
           <div
-            key={tech.name}
+            key={skill.name}
             className="px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-[var(--border)] transition-all duration-300 cursor-default hover:scale-110"
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = `${tech.color}30`;
-              e.currentTarget.style.boxShadow = `0 0 12px ${tech.color}40`;
+              e.currentTarget.style.backgroundColor = `${skill.color}30`;
+              e.currentTarget.style.boxShadow = `0 0 12px ${skill.color}40`;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = '';
               e.currentTarget.style.boxShadow = '';
             }}
           >
-            <span className="text-xs md:text-sm font-medium">{tech.name}</span>
+            <span className="text-xs md:text-sm font-medium">{skill.name}</span>
           </div>
         ))}
       </div>
