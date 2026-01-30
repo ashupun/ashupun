@@ -77,7 +77,7 @@ const personJsonLd = {
   name: "Ashu Pun",
   alternateName: ["Ashu", "ashupun", "Ashubun"],
   url: baseUrl,
-  image: `${baseUrl}/profilepicture.jpg`,
+  image: `${baseUrl}/og-image.png`,
   jobTitle: "Designer & Engineer",
   description: "Ashu Pun is a designer and engineer based in London, creating beautiful digital experiences.",
   knowsAbout: ["Web Development", "UI/UX Design", "React", "Next.js", "TypeScript"],

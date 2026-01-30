@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Image from 'next/image';
 import { User, Mail, Cloud, Music, Pen, Monitor, GitHub, Twitter, Discord, LinkedIn, Arrow, Laptop, Computer, Smartphone, Figma, Code, V0, Sparkles, Signal, Heart, Clock, Star, Spotify } from './icons';
 import { blogs as blogData, getExcerpt } from '../data/blogs';
 
@@ -41,10 +40,24 @@ function useTilt(maxTilt = 10) {
   return { ref, style };
 }
 
+interface SpotifyData {
+  isPlaying: boolean;
+  title?: string;
+  artist?: string;
+  albumImageUrl?: string;
+  songUrl?: string;
+}
+
+interface StatusData {
+  status: string;
+  activity: string | null;
+}
+
 export function About({ typing = true }: { typing?: boolean }) {
   const [displayedText, setDisplayedText] = useState(typing ? '' : "Hello! I'm Ashu nice to meet you");
   const fullText = "Hello! I'm Ashu nice to meet you";
-  const tilt = useTilt(5);
+  const [spotifyData, setSpotifyData] = useState<SpotifyData | null>(null);
+  const [status, setStatus] = useState<StatusData | null>(null);
 
   useEffect(() => {
     if (typing && displayedText.length < fullText.length) {
@@ -54,6 +67,45 @@ export function About({ typing = true }: { typing?: boolean }) {
       return () => clearTimeout(timeout);
     }
   }, [displayedText, typing]);
+
+  useEffect(() => {
+    const fetchSpotify = async () => {
+      try {
+        const res = await fetch('/api/spotify');
+        const data = await res.json();
+        setSpotifyData(data);
+      } catch {
+        setSpotifyData({ isPlaying: false });
+      }
+    };
+    fetchSpotify();
+    const interval = setInterval(fetchSpotify, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        setStatus(data);
+      } catch {
+        setStatus({ status: 'Offline', activity: null });
+      }
+    };
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const statusColors: Record<string, string> = {
+    'Online': '#10b981',
+    'Away': '#f59e0b',
+    'Do Not Disturb': '#ef4444',
+    'Offline': '#6b7280',
+  };
+
+  const statusColor = statusColors[status?.status || 'Offline'] || '#6b7280';
 
   const renderText = () => {
     const ashuStart = fullText.indexOf('Ashu');
@@ -80,7 +132,7 @@ export function About({ typing = true }: { typing?: boolean }) {
   };
 
   return (
-    <div ref={tilt.ref} style={tilt.style} className="card h-full overflow-hidden gradient-bg flex flex-col">
+    <div className="card h-full overflow-hidden gradient-bg flex flex-col !transition-none hover:!transform-none hover:!shadow-none hover:!border-[var(--border)] !border-[1px]">
       <div className="flex items-center justify-between mb-4">
         <div className="label !mb-0">
           <User /> About Me
@@ -112,53 +164,87 @@ export function About({ typing = true }: { typing?: boolean }) {
           </a>
         </div>
       </div>
-      <div className="about-hero mb-6">
-        <div className="profile-image relative rounded-xl overflow-hidden profile-glow">
-          <Image
-            src="/profilepicture.jpg"
-            alt="Ashu Pun"
-            fill
-            className="object-cover transition-transform duration-500 hover:scale-105"
-            sizes="(max-width: 768px) 128px, (max-width: 1024px) 100px, 360px"
-            priority
-          />
-        </div>
-        <div className="intro-text">
-          <h1 className="text-lg font-semibold mb-2">
-            {renderText()}
-            <span className="inline-block w-[2px] h-[1.1em] bg-[var(--fg)] ml-0.5 align-middle cursor-blink" />
-          </h1>
-          <p className="text-base md:text-sm text-[var(--muted)]">
-            A designer and engineer based in London.
-          </p>
+      <div className="mb-6">
+        <h1 className="text-lg font-semibold mb-2">
+          {renderText()}
+          <span className="inline-block w-[2px] h-[1.1em] bg-[var(--fg)] ml-0.5 align-middle cursor-blink" />
+        </h1>
+        <p className="text-sm text-[var(--muted)] mb-3">
+          A designer and engineer based in London.
+        </p>
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: statusColor }} />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ backgroundColor: statusColor }} />
+          </span>
+          <span className="text-sm font-medium" style={{ color: statusColor }}>{status?.status || 'Loading...'}</span>
         </div>
       </div>
-      <div className="border-t border-[var(--border)] pt-6">
-        <div className="label">
-          <Star /> Fun Facts
+      <div className="border-t border-[var(--border)] pt-4 flex flex-row gap-4 lg:flex-col lg:gap-0">
+        <div className="flex-1 lg:flex-none">
+          <div className="label">
+            <Star /> Fun Facts
+          </div>
+          <ul className="text-sm space-y-1">
+            <li className="hover:translate-x-1 transition-transform">• Cat lover =^..^=</li>
+            <li className="hover:translate-x-1 transition-transform">• Cupcake decorator</li>
+            <li className="hover:translate-x-1 transition-transform">• Aspiring coder</li>
+          </ul>
         </div>
-        <ul className="text-base md:text-sm space-y-2">
-          <li className="hover:translate-x-1 transition-transform">• Cat lover =^..^=</li>
-          <li className="hover:translate-x-1 transition-transform">• Cupcake decorator</li>
-          <li className="hover:translate-x-1 transition-transform">• Aspiring coder</li>
-        </ul>
+        <div className="flex-1 lg:flex-none lg:border-t lg:border-[var(--border)] lg:pt-4 lg:mt-3">
+          <div className="label">
+            <Heart /> Hobbies
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {['Gaming', 'Baking', 'Anime', 'Travel', 'Digital Art'].map((hobby) => (
+              <span key={hobby} className="px-2 py-0.5 rounded-full bg-[var(--pink-light)] text-[var(--pink)] border border-[var(--pink-border)] text-xs">{hobby}</span>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="border-t border-[var(--border)] pt-6 mt-auto">
+      <div className="border-t border-[var(--border)] pt-6 mt-4 pb-4 lg:pb-0">
         <div className="label">
+          <span className="flex items-center gap-[2px] h-3">
+            <span className={`sound-wave-bar ${!spotifyData?.isPlaying ? '[animation-play-state:paused]' : ''}`} />
+            <span className={`sound-wave-bar ${!spotifyData?.isPlaying ? '[animation-play-state:paused]' : ''}`} />
+            <span className={`sound-wave-bar ${!spotifyData?.isPlaying ? '[animation-play-state:paused]' : ''}`} />
+            <span className={`sound-wave-bar ${!spotifyData?.isPlaying ? '[animation-play-state:paused]' : ''}`} />
+          </span>
+          Currently Listening
+        </div>
+        {spotifyData?.title ? (
+          <a href={spotifyData.songUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group">
+            <div className="w-14 h-14 rounded-lg overflow-hidden shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
+              {spotifyData.albumImageUrl ? (
+                <img src={spotifyData.albumImageUrl} alt={spotifyData.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-[var(--border)] flex items-center justify-center">
+                  <Music />
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate group-hover:text-[var(--pink)] transition-colors">{spotifyData.title}</p>
+              <p className="text-xs text-[var(--muted)] truncate">{spotifyData.artist}</p>
+            </div>
+          </a>
+        ) : (
+          <p className="text-sm text-[var(--muted)]">Loading...</p>
+        )}
+      </div>
+      <div className="flex-1"></div>
+      <div className="mt-auto border-t border-[var(--border)] pt-4">
+        <div className="label !mb-1">
           <Mail /> Contact
         </div>
-        <p className="text-base md:text-sm">
-          Feel free to reach out at{" "}
-          <a
-            href="mailto:ashupun@outlook.com"
-            className="text-[var(--pink)] hover:underline"
-          >
-            ashupun@outlook.com
-          </a>
+        <p className="text-sm text-[var(--muted)] mb-2">
+          If you want to chat, feel free to reach out to me on{' '}
+          <a href="https://x.com/ashubun" target="_blank" rel="noopener noreferrer" className="text-[var(--fg)] font-bold hover:underline">Twitter</a>
+          , or join my{' '}
+          <a href="https://discord.gg/eCGnE5VKsb" target="_blank" rel="noopener noreferrer" className="text-[#4f46e5] font-bold hover:underline">Discord server</a>
+          . You can also email me at:
         </p>
-      </div>
-      <div className="border-t border-[var(--border)] pt-6 mt-6">
-        <p className="text-xs text-[var(--muted)]">Made with ♡</p>
+        <p className="text-sm text-[#c026d3] font-bold">ashupun@outlook.com</p>
       </div>
     </div>
   );
@@ -190,7 +276,7 @@ export function LocalTime() {
         <Clock /> Time
       </div>
       <div className="flex-1 flex flex-col items-center justify-center">
-        <p className="text-xl md:text-2xl font-bold text-[var(--pink)] flex">
+        <p className="text-lg md:text-xl font-bold text-[var(--pink)] flex">
           {(time || '--:--').split('').map((char, i) => (
             <span
               key={i}
@@ -247,7 +333,7 @@ export function Status() {
         Status
       </div>
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-lg md:text-2xl font-semibold flex items-center gap-2 md:gap-3" style={{ color }}>
+        <p className="text-lg md:text-xl font-semibold flex items-center gap-2 md:gap-3" style={{ color }}>
           <span className="relative flex h-3 w-3 md:h-4 md:w-4">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: color }} />
             <span className="relative inline-flex rounded-full h-3 w-3 md:h-4 md:w-4" style={{ backgroundColor: color, boxShadow: `0 0 20px 5px ${color}` }} />
@@ -299,10 +385,10 @@ export function Weather() {
         Weather
       </div>
       <div className="flex-1 flex flex-col items-center justify-center">
-        <p className={`text-xl md:text-lg font-semibold transition-all duration-300 ${isHovered ? 'scale-110 text-[var(--pink)]' : ''}`}>
+        <p className={`text-lg md:text-xl font-semibold transition-all duration-300 ${isHovered ? 'scale-110 text-[var(--pink)]' : ''}`}>
           {weather?.temp ?? '--'}°C
         </p>
-        <p className="text-xs md:text-sm text-[var(--muted)]">{weather?.condition ?? 'Loading...'}</p>
+        <p className="text-xs text-[var(--muted)]">{weather?.condition ?? 'Loading...'}</p>
       </div>
     </div>
   );
@@ -334,26 +420,19 @@ export function Location() {
 }
 
 export function Projects() {
-  const [isDark, setIsDark] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const tilt = useTilt(15);
-
-  useEffect(() => {
-    const checkTheme = () => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    };
-    checkTheme();
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
-
-  const floatingIcons = [
-    { icon: '🚀', delay: 0, x: 15, y: 20 },
-    { icon: '💻', delay: 0.5, x: 75, y: 15 },
-    { icon: '⚡', delay: 1, x: 85, y: 70 },
-    { icon: '🎨', delay: 1.5, x: 10, y: 75 },
-    { icon: '✨', delay: 0.3, x: 50, y: 85 },
+  const stars = [
+    { x: 12, y: 18, size: 3 },
+    { x: 78, y: 12, size: 2.5 },
+    { x: 22, y: 72, size: 2 },
+    { x: 88, y: 55, size: 2.5 },
+    { x: 42, y: 8, size: 3 },
+    { x: 68, y: 82, size: 2 },
+    { x: 8, y: 48, size: 2 },
+    { x: 92, y: 32, size: 2.5 },
+    { x: 55, y: 38, size: 2 },
+    { x: 35, y: 88, size: 2.5 },
   ];
 
   return (
@@ -369,32 +448,23 @@ export function Projects() {
         <Code /> Projects
         <span className="ml-auto transition-transform duration-300 group-hover:translate-x-1 group-hover:scale-110"><Arrow /></span>
       </div>
-      <div
-        className={`flex-1 rounded-lg flex items-center justify-center relative overflow-hidden transition-all duration-500 ${isDark ? 'bg-gradient-to-br from-amber-800/40 via-orange-900/30 to-yellow-900/30' : 'bg-gradient-to-br from-pink-200/60 via-rose-100/50 to-orange-100/40'}`}
-        style={{
-          backgroundSize: isHovered ? '200% 200%' : '100% 100%',
-          animation: isHovered ? 'gradient-shift 3s ease infinite' : 'none',
-          boxShadow: isHovered ? `inset 0 0 30px ${isDark ? 'rgba(212, 165, 116, 0.2)' : 'rgba(232, 145, 168, 0.3)'}` : 'none',
-        }}
-      >
-        {floatingIcons.map((item, i) => (
+      <div className="flex-1 rounded-lg flex items-center justify-center relative overflow-hidden bg-[var(--border)] transition-all duration-300 group-hover:bg-[var(--pink-light)]">
+        {stars.map((star, i) => (
           <span
             key={i}
-            className="absolute text-[10px] md:text-sm transition-all duration-500"
+            className="absolute rounded-full bg-[var(--pink)] transition-opacity duration-300"
             style={{
-              left: `${item.x}%`,
-              top: `${item.y}%`,
-              opacity: isHovered ? 1 : 0,
-              transform: isHovered ? 'scale(1) translateY(0)' : 'scale(0.5) translateY(10px)',
-              transitionDelay: `${item.delay * 0.1}s`,
-              animation: isHovered ? `float-bounce 2s ease-in-out ${item.delay}s infinite` : 'none',
+              left: `${star.x}%`,
+              top: `${star.y}%`,
+              width: star.size,
+              height: star.size,
+              opacity: isHovered ? 1 : 0.3,
+              animation: isHovered ? `twinkle 1.5s ease-in-out ${i * 0.15}s infinite` : 'none',
             }}
-          >
-            {item.icon}
-          </span>
+          />
         ))}
         <div className="text-center relative z-10">
-          <p className={`text-xs md:text-sm font-medium transition-all duration-300 ${isHovered ? 'scale-110 text-[var(--pink)]' : ''}`}>View All</p>
+          <p className="text-xs md:text-sm font-medium transition-all duration-300 group-hover:scale-110 group-hover:text-[var(--pink)]">View All</p>
         </div>
       </div>
     </a>
@@ -413,34 +483,34 @@ export function Skills() {
   return (
     <div ref={tilt.ref} style={tilt.style} className="card h-full flex flex-col overflow-hidden">
       <div className="label"><Sparkles /> Socials</div>
-      <div className="flex-1 flex flex-col justify-center gap-2 md:gap-3">
+      <div className="flex-1 flex flex-col justify-center gap-2 md:gap-2.5">
         {socials.map((social) => (
           <a
             key={social.name}
             href={social.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 group"
+            className="flex items-center gap-2 group"
           >
             <div
-              className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 cursor-pointer"
+              className="w-8 h-8 md:w-9 md:h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 cursor-pointer"
               style={{
                 backgroundColor: social.color,
-                boxShadow: `0 4px 14px ${social.color}60, inset 0 -4px 8px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.3)`,
-                transform: 'perspective(1000px) rotateX(10deg)',
+                boxShadow: `0 3px 10px ${social.color}50, inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.3)`,
+                transform: 'perspective(1000px) rotateX(8deg)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) translateY(-4px) scale(1.1)';
-                e.currentTarget.style.boxShadow = `0 8px 24px ${social.color}80, inset 0 -4px 8px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.3)`;
+                e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) translateY(-3px) scale(1.1)';
+                e.currentTarget.style.boxShadow = `0 6px 18px ${social.color}70, inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.3)`;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'perspective(1000px) rotateX(10deg)';
-                e.currentTarget.style.boxShadow = `0 4px 14px ${social.color}60, inset 0 -4px 8px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.3)`;
+                e.currentTarget.style.transform = 'perspective(1000px) rotateX(8deg)';
+                e.currentTarget.style.boxShadow = `0 3px 10px ${social.color}50, inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.3)`;
               }}
             >
-              <span className="text-white">{social.icon}</span>
+              <span className="text-white text-sm">{social.icon}</span>
             </div>
-            <span className="text-sm md:text-base font-medium transition-all duration-300 group-hover:text-[var(--pink)] group-hover:translate-x-1">
+            <span className="text-xs md:text-sm font-medium transition-all duration-300 group-hover:text-[var(--pink)] group-hover:translate-x-1">
               {social.name}
             </span>
           </a>
@@ -499,7 +569,7 @@ export function Blog() {
               <Pen />
               <span className="text-xs md:text-sm font-semibold uppercase tracking-wide text-slate-500">Blog</span>
             </div>
-            <h3 className="font-bold text-sm md:text-lg text-slate-800 leading-tight mb-1">{blog.title}</h3>
+            <h3 className="font-bold text-sm md:text-base text-slate-800 leading-tight mb-1">{blog.title}</h3>
             <p className="text-xs md:text-sm text-slate-500 mb-2 md:mb-3">{getTimeAgo(blog.date)}</p>
             <p className="text-xs md:text-sm text-slate-600 leading-relaxed line-clamp-3 md:line-clamp-5">{getExcerpt(blog.content)}</p>
           </a>
@@ -592,7 +662,7 @@ export function Playing() {
         >
           <div
             className={`absolute inset-0 rounded-2xl transition-all duration-300 ${isHovering ? 'opacity-100' : 'opacity-0'}`}
-            style={{ boxShadow: `0 0 30px 10px ${isDark ? 'rgba(212, 165, 116, 0.4)' : 'rgba(232, 145, 168, 0.4)'}` }}
+            style={{ boxShadow: `0 0 30px 10px ${isDark ? 'rgba(167, 139, 250, 0.4)' : 'rgba(232, 145, 168, 0.4)'}` }}
           />
           <div
             className="relative w-full h-full transition-transform duration-300"
@@ -605,11 +675,11 @@ export function Playing() {
             {spotifyData?.albumImageUrl ? (
               <img src={spotifyData.albumImageUrl} alt={spotifyData.title || 'Album'} className={`absolute w-full h-full rounded-2xl object-cover shadow-lg transition-transform duration-300 ${isHovering ? 'scale-105' : ''}`} style={{ backfaceVisibility: 'hidden' }} />
             ) : (
-              <div className={`absolute w-full h-full rounded-2xl shadow-lg flex items-center justify-center ${isDark ? 'bg-gradient-to-br from-amber-600 to-yellow-700' : 'bg-gradient-to-br from-pink-400 to-rose-500'}`} style={{ backfaceVisibility: 'hidden' }}>
+              <div className={`absolute w-full h-full rounded-2xl shadow-lg flex items-center justify-center ${isDark ? 'bg-gradient-to-br from-violet-600 to-purple-700' : 'bg-gradient-to-br from-pink-400 to-rose-500'}`} style={{ backfaceVisibility: 'hidden' }}>
                 <Music />
               </div>
             )}
-            <div className={`absolute w-full h-full rounded-2xl shadow-lg flex items-center justify-center ${isDark ? 'bg-gradient-to-br from-amber-600 to-yellow-700' : 'bg-gradient-to-br from-pink-400 to-rose-500'}`} style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+            <div className={`absolute w-full h-full rounded-2xl shadow-lg flex items-center justify-center ${isDark ? 'bg-gradient-to-br from-violet-600 to-purple-700' : 'bg-gradient-to-br from-pink-400 to-rose-500'}`} style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
               {spotifyData?.isPlaying ? (
                 <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
@@ -623,8 +693,8 @@ export function Playing() {
           </div>
         </div>
         <div className="text-center w-full px-2">
-          <p className={`text-base md:text-sm font-semibold truncate transition-all duration-300 ${isHovering ? 'text-[var(--pink)]' : ''}`}>{spotifyData?.title || 'Not Playing'}</p>
-          <p className="text-base md:text-sm text-[var(--muted)] truncate">{spotifyData?.artist || 'Spotify'}</p>
+          <p className={`text-sm font-semibold truncate transition-all duration-300 ${isHovering ? 'text-[var(--pink)]' : ''}`}>{spotifyData?.title || 'Not Playing'}</p>
+          <p className="text-xs text-[var(--muted)] truncate">{spotifyData?.artist || 'Spotify'}</p>
         </div>
       </div>
     </div>
@@ -836,11 +906,11 @@ export function TechStack() {
   return (
     <div ref={tilt.ref} style={tilt.style} className="card !pb-3">
       <div className="label !mb-1"><Code /> Tech Stack</div>
-      <div className="flex flex-wrap gap-1.5 md:gap-2">
+      <div className="flex gap-1.5 md:gap-2 overflow-x-auto pb-1">
         {technologies.map((tech) => (
           <div
             key={tech.name}
-            className="px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-[var(--border)] transition-all duration-300 cursor-default hover:scale-110"
+            className="px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-[var(--border)] transition-all duration-300 cursor-default hover:scale-110 flex-shrink-0"
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = `${tech.color}30`;
               e.currentTarget.style.boxShadow = `0 0 12px ${tech.color}40`;
@@ -864,7 +934,6 @@ export function Learning() {
   const tilt = useTilt(12);
   const skills = [
     { name: 'UI/UX', label: 'UI', color: 'var(--pink)' },
-    { name: 'HTML/CSS', label: '</>', color: '#e34c26' },
     { name: 'Collab', label: 'Co', color: '#10b981' },
     { name: 'Notion', label: 'N', color: '#6b7280' },
   ];
@@ -872,11 +941,11 @@ export function Learning() {
   return (
     <div ref={tilt.ref} style={tilt.style} className="card !pb-3">
       <div className="label !mb-1"><Sparkles /> Skills</div>
-      <div className="flex flex-wrap gap-1.5 md:gap-2">
+      <div className="flex gap-1.5 md:gap-2 overflow-x-auto pb-1">
         {skills.map((skill) => (
           <div
             key={skill.name}
-            className="px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-[var(--border)] transition-all duration-300 cursor-default hover:scale-110"
+            className="px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-[var(--border)] transition-all duration-300 cursor-default hover:scale-110 flex-shrink-0"
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = `${skill.color}30`;
               e.currentTarget.style.boxShadow = `0 0 12px ${skill.color}40`;
@@ -889,6 +958,67 @@ export function Learning() {
             <span className="text-xs md:text-sm font-medium">{skill.name}</span>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+export function Now() {
+  const tilt = useTilt(8);
+  const [displayText, setDisplayText] = useState('');
+  const [statusIndex, setStatusIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(true);
+
+  const statuses = [
+    'coding',
+    'designing',
+    'learning',
+    'building',
+    'creating',
+    'dreaming',
+  ];
+
+  useEffect(() => {
+    const currentStatus = statuses[statusIndex];
+    let charIndex = 0;
+    let timeout: NodeJS.Timeout;
+
+    if (isTyping) {
+      const typeChar = () => {
+        if (charIndex <= currentStatus.length) {
+          setDisplayText(currentStatus.slice(0, charIndex));
+          charIndex++;
+          timeout = setTimeout(typeChar, 100);
+        } else {
+          timeout = setTimeout(() => setIsTyping(false), 2000);
+        }
+      };
+      typeChar();
+    } else {
+      const deleteChar = () => {
+        if (charIndex > 0) {
+          charIndex--;
+          setDisplayText(currentStatus.slice(0, charIndex));
+          timeout = setTimeout(deleteChar, 50);
+        } else {
+          setStatusIndex((prev) => (prev + 1) % statuses.length);
+          setIsTyping(true);
+        }
+      };
+      charIndex = currentStatus.length;
+      deleteChar();
+    }
+
+    return () => clearTimeout(timeout);
+  }, [statusIndex, isTyping, statuses.length]);
+
+  return (
+    <div ref={tilt.ref} style={tilt.style} className="card h-full flex flex-col overflow-hidden">
+      <div className="flex-1 flex items-center justify-center">
+        <span className="text-sm md:text-base font-medium text-[var(--muted)]">
+          currently: <span className="text-[var(--pink)]">{displayText}</span>
+          <span className="cursor-blink">|</span>
+        </span>
       </div>
     </div>
   );

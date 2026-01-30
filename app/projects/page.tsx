@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { GitHub, Globe } from "../components/icons";
 
-function getScreenshotUrl(url: string) {
-  return `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`;
+function getScreenshotUrl(url: string, refresh?: number) {
+  const base = `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`;
+  return refresh ? `${base}&v=${refresh}` : base;
 }
 
 const projects = [
@@ -16,6 +17,7 @@ const projects = [
     github: "https://github.com/ashupun/ashupun",
     live: "https://ashupun.com",
     icon: "/ashupunicon.png",
+    refresh: 1,
   },
   {
     title: "sweethe.art",
@@ -33,20 +35,14 @@ const projects = [
     live: "https://cryba.by",
   },
   {
-    title: "loving.gg",
-    description: "Send love notes to your family, friends or partner.",
-    tech: ["Next.js", "Tailwind CSS"],
-    github: "https://github.com/ashupun/loving",
-    live: "https://loving.gg",
-    icon: "/lovingicon.png",
-  },
-  {
     title: "lovehe.art",
     description:
       "A cryptocurrency converter that let's you convert stable coins with minimal transaction fees.",
     tech: ["Next.js", "Tailwind CSS"],
     github: "https://github.com/ashupun/loveheart",
     live: "https://lovehe.art",
+    icon: "/lovehearticon.png",
+    refresh: 1,
   },
   {
     title: "sugarblooms.co.uk",
@@ -57,25 +53,11 @@ const projects = [
     icon: "/sugarbloomsicon.png",
   },
 
-  {
-    title: "bunnyrabb.it",
-    description:
-      "Coming Soon: A cute bunny-themed drag-and-drop task management for staying organized.",
-    tech: ["Next.js", "Tailwind CSS"],
-    github: "https://github.com/ashupun/bunnyrabbit",
-    live: "https://bunnyrabb.it",
-  },
-  {
-    title: "Weather App",
-    description: "Minimal weather app with location-based forecasts.",
-    tech: ["React", "OpenWeather API", "CSS"],
-    github: "https://github.com/ashupun/weather-app",
-  },
-];
+    ];
 
 function ProjectCard({ project }: { project: (typeof projects)[0] }) {
   const [imageError, setImageError] = useState(false);
-  const screenshotUrl = project.live ? getScreenshotUrl(project.live) : null;
+  const screenshotUrl = project.live ? getScreenshotUrl(project.live, 'refresh' in project ? project.refresh : undefined) : null;
 
   return (
     <div className="card flex flex-col group">
