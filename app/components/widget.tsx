@@ -137,31 +137,12 @@ export function About({ typing = true }: { typing?: boolean }) {
         <div className="label !mb-0">
           <User /> About Me
         </div>
-        <div className="flex gap-3">
-          <a
-            href="https://x.com/ashubun"
-            className="text-[var(--muted)] hover:text-[var(--pink)] transition-all hover:scale-110"
-          >
-            <Twitter />
-          </a>
-          <a
-            href="https://www.linkedin.com/in/ashubun/"
-            className="text-[var(--muted)] hover:text-[var(--pink)] transition-all hover:scale-110"
-          >
-            <LinkedIn />
-          </a>
-          <a
-            href="https://discord.gg/eCGnE5VKsb"
-            className="text-[var(--muted)] hover:text-[var(--pink)] transition-all hover:scale-110"
-          >
-            <Discord />
-          </a>
-          <a
-            href="https://github.com/ashupun"
-            className="text-[var(--muted)] hover:text-[var(--pink)] transition-all hover:scale-110"
-          >
-            <GitHub />
-          </a>
+        <div className="flex items-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: statusColor }} />
+            <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: statusColor }} />
+          </span>
+          <span className="text-xs font-medium" style={{ color: statusColor }}>{status?.status || 'Loading...'}</span>
         </div>
       </div>
       <div className="mb-6">
@@ -169,16 +150,9 @@ export function About({ typing = true }: { typing?: boolean }) {
           {renderText()}
           <span className="inline-block w-[2px] h-[1.1em] bg-[var(--fg)] ml-0.5 align-middle cursor-blink" />
         </h1>
-        <p className="text-sm text-[var(--muted)] mb-3">
+        <p className="text-sm text-[var(--muted)]">
           A designer and engineer based in London.
         </p>
-        <div className="flex items-center gap-2">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: statusColor }} />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ backgroundColor: statusColor }} />
-          </span>
-          <span className="text-sm font-medium" style={{ color: statusColor }}>{status?.status || 'Loading...'}</span>
-        </div>
       </div>
       <div className="border-t border-[var(--border)] pt-4 flex flex-row gap-4 lg:flex-col lg:gap-0">
         <div className="flex-1 lg:flex-none">
@@ -396,6 +370,17 @@ export function Weather() {
 
 export function Location() {
   const tilt = useTilt(8);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const checkDarkMode = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    checkDarkMode();
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div ref={tilt.ref} style={tilt.style} className="card h-full !p-0 overflow-hidden">
@@ -403,12 +388,12 @@ export function Location() {
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d158857.7281146214!2d-0.24168!3d51.5074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8a00baf21de75%3A0x52963a5addd52a99!2sLondon%2C%20UK!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"
           className="absolute inset-0 w-full h-full"
-          style={{ border: 0 }}
+          style={{ border: 0, filter: isDark ? 'invert(1) sepia(0.3) hue-rotate(220deg) saturate(0.8) brightness(0.9)' : 'none' }}
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
         />
-        <a href="https://www.google.com/maps?ll=51.5074,-0.1278&z=13&t=m&hl=en&gl=GB&mapclient=embed" target="_blank" rel="noopener noreferrer" className="absolute bottom-3 right-3 bg-white px-3 py-1.5 rounded-full text-xs md:text-sm font-medium shadow-lg flex items-center gap-1.5 text-[#333] hover:scale-105 transition-transform">
+        <a href="https://www.google.com/maps?ll=51.5074,-0.1278&z=13&t=m&hl=en&gl=GB&mapclient=embed" target="_blank" rel="noopener noreferrer" className="absolute bottom-3 right-3 bg-[var(--card)] px-3 py-1.5 rounded-full text-xs md:text-sm font-medium shadow-lg flex items-center gap-1.5 text-[var(--fg)] hover:scale-105 transition-transform">
           <svg className="w-4 h-4 text-[var(--pink)]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
           </svg>
