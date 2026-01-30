@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { User, Mail, Cloud, Music, Pen, Monitor, GitHub, Twitter, Discord, LinkedIn, Arrow, Laptop, Computer, Smartphone, Figma, Code, V0, Sparkles, Signal, Heart, Clock, Star, Spotify } from './icons';
+import { User, Mail, Cloud, Music, Pen, Monitor, GitHub, Twitter, Discord, LinkedIn, Arrow, Laptop, Computer, Smartphone, Figma, Code, V0, Sparkles, Signal, Heart, Clock, Star, Spotify, Smiley } from './icons';
 import { blogs as blogData, getExcerpt } from '../data/blogs';
 
 function useTilt(maxTilt = 10) {
@@ -132,7 +132,7 @@ export function About({ typing = true }: { typing?: boolean }) {
   };
 
   return (
-    <div className="card h-full overflow-hidden gradient-bg flex flex-col !transition-none hover:!transform-none hover:!shadow-none hover:!border-[var(--border)] !border-[1px]">
+    <div className="card h-full overflow-hidden gradient-bg flex flex-col !transition-none hover:!transform-none hover:!shadow-none">
       <div className="flex items-center justify-between mb-4">
         <div className="label !mb-0">
           <User /> About Me
@@ -482,7 +482,7 @@ export function Skills() {
 
   return (
     <div ref={tilt.ref} style={tilt.style} className="card h-full flex flex-col overflow-hidden">
-      <div className="label"><Sparkles /> Socials</div>
+      <div className="label"><Smiley /> Socials</div>
       <div className="flex-1 flex flex-col justify-center gap-2 md:gap-2.5">
         {socials.map((social) => (
           <a

@@ -34,6 +34,26 @@ export function Signal() {
   );
 }
 
+export function Smiley() {
+  return (
+    <svg
+      className="w-3.5 h-3.5"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <circle cx="8" cy="9" r="1.5" />
+      <circle cx="16" cy="9" r="1.5" />
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        d="M7 14c1.5 3 8.5 3 10 0"
+      />
+    </svg>
+  );
+}
+
 export function Bolt() {
   return (
     <svg

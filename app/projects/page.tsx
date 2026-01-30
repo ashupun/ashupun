@@ -36,8 +36,7 @@ const projects = [
   },
   {
     title: "lovehe.art",
-    description:
-      "A cryptocurrency converter that let's you convert stable coins with minimal transaction fees.",
+    description: "Send love notes to your family, friends or partner.",
     tech: ["Next.js", "Tailwind CSS"],
     github: "https://github.com/ashupun/loveheart",
     live: "https://lovehe.art",
@@ -52,8 +51,12 @@ const projects = [
     live: "https://sugarblooms.co.uk",
     icon: "/sugarbloomsicon.png",
   },
-
-    ];
+  {
+    title: "Something New",
+    description: "Working on something special...",
+    tech: [],
+  },
+];
 
 function ProjectCard({ project }: { project: (typeof projects)[0] }) {
   const [imageError, setImageError] = useState(false);
@@ -64,9 +67,7 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
       <div className="aspect-[16/9] rounded-lg overflow-hidden mb-3 bg-[var(--border)] flex-shrink-0 relative">
         {!screenshotUrl || imageError ? (
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[var(--pink)]/20 to-[var(--pink)]/5">
-            <span className="text-sm font-medium text-[var(--muted)]">
-              Coming Soon
-            </span>
+            <span className="text-lg font-bold text-[var(--pink)]">Coming Soon</span>
           </div>
         ) : (
           <img
